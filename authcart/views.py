@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import RegisterForm
-from django.contrib.auth import login, logout
+from .forms import RegisterForm,LoginForm
+from django.contrib.auth import login, logout,authenticate
 
 
 
@@ -32,7 +32,29 @@ def signup(request):
 
 
 def handle_login(request):
-    return render(request, 'authentication/login-signup.html')
+    form = LoginForm()
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            # if not User.objects.filter(username = username):
+            #     messages.error("This account does not exist! Please Sign up first!")
+            #     return redirect('signUp')
+            password = form.cleaned_data['password']
+            user = authenticate(username = username,password = password)
+            if user is not None:
+                login(request,user)
+                return redirect('index')
+            else:
+                if not User.objects.filter(username = username).exists():
+                    messages.error(request,"This account does not exist! Please Sign up first!")
+                    return redirect('signUp')
+                else:
+                    messages.error(request,"Invalid password!")
+
+
+
+    return render(request, 'authentication/login-signup.html',{"form":form,"is_login":True})
 
 
 def handle_logout(request):
