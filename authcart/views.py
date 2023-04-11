@@ -36,4 +36,5 @@ def handle_login(request):
 
 
 def handle_logout(request):
-    return redirect('/auth/login')
+    logout(request)
+    return redirect('handleLogin')
