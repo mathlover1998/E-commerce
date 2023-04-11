@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
+
 from django.contrib import messages
 from .forms import RegisterForm,LoginForm
 from django.contrib.auth import login, logout,authenticate
 from .utils import send_email
+from .models import User
 
 
 
@@ -13,8 +14,14 @@ def signup(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            email = str(form.cleaned_data.get('email'))
-            if User.objects.filter(username=email):
+            email = form.cleaned_data.get('email')
+            username = form.cleaned_data.get('username')
+
+            if User.objects.filter(username=username):
+                messages.error(
+                    request, 'This username is taken! Please log in instead!')
+                return redirect('handleLogin')
+            elif User.objects.filter(email=email):
                 messages.error(
                     request, 'This email is taken! Please log in instead!')
                 return redirect('handleLogin')
@@ -24,9 +31,10 @@ def signup(request):
                 messages.warning(
                     request, 'Confirm password must be the same with password!')
                 return redirect('signUp')
-            send_email(email)
+            # send_email(email)
             user = User.objects.create_user(
                 username=email, email=email, password=password)
+            
             user.save()
             login(request, user)
             return redirect('index')
@@ -60,3 +68,5 @@ def handle_login(request):
 def handle_logout(request):
     logout(request)
     return redirect('handleLogin')
+
+

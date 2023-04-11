@@ -10,3 +10,15 @@ def contact(request):
 
 def about(request):
     return render(request,'about.html')
+
+def orders(request):
+    return render(request,'orders.html')
+
+def profile(request):
+    return render(request,'profile.html')
+
+def blog(request):
+    return render(request,'blog.html')
+
+def cart(request):
+    return render(request,'cart.html')

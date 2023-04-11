@@ -2,6 +2,11 @@ from django import forms
 
 
 class RegisterForm(forms.Form):
+    username = forms.CharField(
+        label='Username',
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        required=True,
+    )
     email = forms.EmailField(
         label='Email address',
         widget=forms.EmailInput(attrs={'class': 'form-control'}),
