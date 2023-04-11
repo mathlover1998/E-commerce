@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import RegisterForm,LoginForm
 from django.contrib.auth import login, logout,authenticate
+from .utils import send_email
+
 
 
 
@@ -11,7 +13,7 @@ def signup(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('email')
+            email = str(form.cleaned_data.get('email'))
             if User.objects.filter(username=email):
                 messages.error(
                     request, 'This email is taken! Please log in instead!')
@@ -22,6 +24,7 @@ def signup(request):
                 messages.warning(
                     request, 'Confirm password must be the same with password!')
                 return redirect('signUp')
+            send_email(email)
             user = User.objects.create_user(
                 username=email, email=email, password=password)
             user.save()
@@ -37,9 +40,6 @@ def handle_login(request):
         form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
-            # if not User.objects.filter(username = username):
-            #     messages.error("This account does not exist! Please Sign up first!")
-            #     return redirect('signUp')
             password = form.cleaned_data['password']
             user = authenticate(username = username,password = password)
             if user is not None:
