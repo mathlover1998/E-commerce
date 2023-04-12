@@ -1,6 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from decouple import config
 
 shop_name = "Cole's Store"
 confirm_code = 123456
@@ -10,7 +11,9 @@ smtp_server = 'smtp.gmail.com'
 smtp_port = 587
 
 
+
 def send_email(email):
+
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = email
