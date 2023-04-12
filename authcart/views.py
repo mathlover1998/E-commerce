@@ -70,3 +70,5 @@ def handle_logout(request):
     return redirect('handleLogin')
 
 
+def update_profile(request):
+    pass
