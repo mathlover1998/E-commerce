@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.dispatch import receiver
-# from django.db.models.signals import post_save
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 
@@ -15,6 +14,8 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=200, null=False,default='')
     email_verified = models.BooleanField(null=False,default=0)
     gender = models.CharField(choices=GENDER_CHOICES,max_length=20,null=False,default=GENDER_CHOICES[2])
+    phone = PhoneNumberField(null=False,default = '')
+    DoB = models.DateField(default='1900-01-01')
     
 
     class Meta:

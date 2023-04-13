@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 
 from django.contrib import messages
-from .forms import RegisterForm,LoginForm
+from .forms import RegisterForm,LoginForm,UpdateProfileForm
 from django.contrib.auth import login, logout,authenticate
+from django.contrib.auth.decorators import login_required
 from .utils import send_email
 from .models import User
+
 
 
 
@@ -33,7 +35,7 @@ def signup(request):
                 return redirect('signUp')
             # send_email(email)
             user = User.objects.create_user(
-                username=email, email=email, password=password)
+                username=username, email=email, password=password)
             
             user.save()
             login(request, user)
@@ -69,6 +71,51 @@ def handle_logout(request):
     logout(request)
     return redirect('handleLogin')
 
+# @login_required
+# def update_profile(request):
+#     id = request.user.id
+#     user = get_object_or_404(User,id= id)
+#     form = UpdateProfileForm(username= user.username,
+#                              first_name=user.first_name,
+#                              last_name = user.last_name,
+#                              phone_number = user.phone,
+#                              gender = user.gender,
+#                              DoB = user.DoB)
+#     print(user.username)
+    
+#     if request.method == 'POST':
+#         form = UpdateProfileForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('index')
 
+
+#     return render(request,'account/profile.html',{'form': form })
+
+@login_required
 def update_profile(request):
-    pass
+    user_id = request.user.id
+    user = get_object_or_404(User,pk=user_id)
+    form = UpdateProfileForm(initial={'username': user.username,
+                                    'last_name': user.last_name,
+                                    'first_name': user.first_name,
+                                    'phone_number': user.phone,
+                                    'gender': user.gender, 
+                                    'DoB': user.DoB,    
+                                    'email': user.email})
+    if request.method == 'POST':
+        form = UpdateProfileForm(request.POST)
+        if form.is_valid():
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.phone = form.cleaned_data['phone_number']
+            user.gender = form.cleaned_data['gender']
+            user.DoB = form.cleaned_data['DoB']
+            user.email = form.cleaned_data['email']
+            
+            user.save()
+            messages.success(request,'Update profile successfully')
+            return redirect('updateProfile')
+
+        
+    return render(request, 'account/profile.html', {'form': form})

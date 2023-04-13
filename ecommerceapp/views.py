@@ -21,4 +21,5 @@ def blog(request):
     return render(request,'blog.html')
 
 def cart(request):
-    return render(request,'cart.html')
+    return render(request,'test.html')
+
